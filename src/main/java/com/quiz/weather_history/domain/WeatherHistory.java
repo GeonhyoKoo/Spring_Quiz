@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 public class WeatherHistory {
 
 	private int id;
+	//@DateTimeFormat(pattern = "yyyy-MM-dd") 을 써주면 데이트도 가능함
 	private LocalDate date;
 	private String weather;
 	private Double temperatures;

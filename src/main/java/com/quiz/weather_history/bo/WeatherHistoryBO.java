@@ -18,4 +18,8 @@ public class WeatherHistoryBO {
 		return weatherHistoryMapper.selectWeatherHistory();
 	}
 	
+	public void addWeatherHistory(WeatherHistory weatherHistory ) {
+		weatherHistoryMapper.insertWeatherHistory(weatherHistory);
+	}
+	
 }

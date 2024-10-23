@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>통나무 펜션</title>
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+    
+    <!--  내가 만든 스타일 시트 -->
+    <link rel="stylesheet" th:href="@{/css/booking/style.css}" type="text/css">
+    
+</head>
+<body>
+	
+	<div id="wrap">
+		<!-- 홈페이지 탑 -->
+		<header class="d-flex justify-content-center align-items-center">
+			<h1>통나무 펜션</h1>
+		</header>
+		
+		<!-- 메뉴창 -->
+		<nav>
+			<ul class="nav nav-fill font-weight-bold">
+				<li class="nav-item"><a href="#" class="nav-link text-white font-weight-bold">펜션소개</a></li>
+				<li class="nav-item"><a href="#" class="nav-link text-white font-weight-bold">객실보기</a></li>
+				<li class="nav-item"><a href="#" class="nav-link text-white font-weight-bold">예약하기</a></li>
+				<li class="nav-item"><a href="/booking/booking-list-view" class="nav-link text-white font-weight-bold">예약목록</a></li>
+			</ul>
+		</nav>	
+		
+		<!-- 배너 창 -->
+		<section class="banner bg-info">
+            <img id="bannerImage" src="/img/booking/test06_banner1.jpg" alt="banner">
+        </section>
+        
+       	<section class="reserve bg-primary d-flex">
+            <section class="real-time-reserved col-4 d-flex justify-content-center align-items-center">
+                <div class="display-4 text-white">실시간<br>예약하기</div>
+            </section>
+            
+            <section class="confirm col-4">
+                <div id="memberBox" class="mr-3 pt-3">
+                	<span class="reserve-confirm-text">예약 확인</span>
+                    <div class="d-flex align-items-center justify-content-end mt-3">
+                        <span class="text-white mr-2">이름</span>
+                        <input type="text" id="name" class="form-control col-9">
+                    </div>
+                    <div class="d-flex align-items-center justify-content-end mt-3">
+                        <span class="text-white mr-2">전화번호</span>
+                        <input type="text" id="phoneNumber" class="form-control col-9">
+                    </div>
+
+                    <!-- 버튼 -->
+                    <div class="d-flex justify-content-end mt-3">
+                        <button type="button" id="checkBookingBtn" class="btn btn-success">조회하기</button>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="inquiry col-4 d-flex justify-content-center align-items-center">
+                <div class="text-white">
+                    <h4 class="font-weight-bold">예약문의:</h4>
+                    <h1>010-<br>0000-1111</h1>
+                </div>
+            </section>
+        </section>
+		
+		<!-- footer 창 -->
+		<footer>
+			<div>
+				<small class="text-secondary">제주특별자치도 제주시 애월읍</small>
+			</div>
+			<div>
+				<small class="text-secondary">사업자 등록번호 : 111-22-252222/ 농어촌민박사업자지정 / 대표 : 김동욱</small>
+			</div>
+			<div>
+				<small class="text-secondary">Copyright 2024 tongnamu. All right reserved </small>
+			</div>	
+		</footer>
+		
+	</div>
+	
+	<script>
+	
+		$(document).ready(function(){
+			
+			$("#checkBookingBtn").on("click" , function(){
+				
+				let name = $("#name").val().trim();
+				let phoneNumber = $("#phoneNumber").val().trim();
+				
+				// validation
+				if (!name){
+					alert("이름을 입력해주세요.");
+					return;
+				}
+				if (!phoneNumber){
+					alert("전화번호를 입력해주세요.");
+					return;
+				}
+				
+				$.ajax({
+					//request
+					type : "POST"
+					, url : "/booking/check-booking"
+					, data : {"name" : name , "phoneNumber" : phoneNumber}
+					// response
+					// {"code" : 200 , "name" : "" , "date" : "" , "day" : , "headcount" : , "state" : ""}
+					, success : function(data){
+						if (data.code == 200){ // 예약내역 있음
+							alert("이름 : " + data.result.name + "\n날짜 : " + data.result.date + "\n일수 : " + data.result.day + "\n인원 : " 
+									 + data.result.headcount + "\n상태 : " + data.result.state);
+						} else if (data.code == 400){ // 예약내역 없음
+							alert(data.error_message);
+						}
+					}
+					, error : function(e){
+						alert("조회를 실패했습니다.");
+					}
+					
+				});
+				
+				
+			});
+			
+			
+		});
+	
+	</script>
+	
+</body>
+</html>

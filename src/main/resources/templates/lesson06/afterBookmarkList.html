@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>bookmark</title>
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+</head>
+<body>
+
+	<div class="container">
+		<h2>즐겨 찾기 목록</h2>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>NO.</th>
+					<th>이름</th>
+					<th>주소</th>
+					<th>삭제</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="bookmark : ${list}">
+					<td th:text="${bookmark.id}">1</td>
+					<td th:text="${bookmark.name}">2</td>
+					<td>
+						<a th:href="${bookmark.url}" target="_blank" th:text="${bookmark.url}"></a>
+					</td>
+					<td>
+						<!--  1. value에 넣기 -->
+						<!--  <button type="button" class="del-btn btn btn-danger" th:value="${bookmark.id}" >삭제</button> -->
+						
+						<!-- 2. data로 값 넣기 -->
+						<button type="button" class="del-btn btn btn-danger" th:data-bookmark-id="${bookmark.id}" >삭제</button>
+					</td>
+				</tr>
+			</tbody>		
+		</table>
+	</div>
+
+
+	<script>
+		$(document).ready(function(){
+			
+			$(".del-btn").on("click" , function(e){
+				//1) value이용 - 단점이 여러개를 못가져와
+				//let id = $(this).val();
+				//alert(id);
+				
+				// 1-1) attr 이용
+				//let id =  $(this).attr("value");
+				//alert(id);
+				
+				// 3) e를 이용
+				//let id = e.target.value;
+				//alert(id);
+				
+				//2) data를 이용 (여러 항목 추가 가능)
+				// 태그 th:data-bookmark-id
+				// js  .data("bookmark-id") 
+				let id = $(this).data("bookmark-id");
+				alert(id);
+				
+				$.ajax({
+					//request
+					type : "delete"
+					, url : "/lesson06/quiz01/delete-bookmark"
+					, data : {"id" : id }
+					// response
+					, success : function(data){
+						// result
+						if(data.result === "성공"){
+							// TODO
+							// 새로고침 해주는데 스크롤 유지, 데이터 다시 get
+							location.reload(true); // true는 넣어도 되고 안넣어도 되는데 안되면 넣기
+						} else if(data.code == 500){
+							alert(data.error_message);
+						}
+					}
+					, error : function(e){
+						alert("삭제하는데 실패했습니다");
+					}
+				});
+				
+				
+			});
+			
+			
+		});
+	
+	</script>
+
+	
+
+</body>
+</html>

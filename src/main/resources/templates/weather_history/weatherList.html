@@ -15,12 +15,15 @@
 	<div id="wrap">
 		<div class="contents d-flex">
 			<nav class="col-2">
-				<img src="/img/weather_history/mark.png" alt="기상청" width="10">
+				<div class="logo d-flex justify-content-center mt-3">
+					<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Emblem_of_the_Government_of_the_Republic_of_Korea.svg/800px-Emblem_of_the_Government_of_the_Republic_of_Korea.svg.png" width="25">
+					<span class="text-white font-weight-bold ml-2">기상청</span>
+				</div>
 				<ul class="nav flex-column font-weight-bold">
-					<li class="nav-item"><a href="#" class="nav-link" >날씨</a></li>
-					<li class="nav-item"><a href="#" class="nav-link" >날씨입력</a></li>
-					<li class="nav-item"><a href="#" class="nav-link" >테마날씨</a></li>
-					<li class="nav-item"><a href="#" class="nav-link" >관측 기후</a></li>
+					<li class="nav-item"><a href="/weather-history//weather-list-view" class="nav-link menu-font" >날씨</a></li>
+					<li class="nav-item"><a href="/weather-history/add-weather-view" class="nav-link menu-font" >날씨입력</a></li>
+					<li class="nav-item"><a href="#" class="nav-link menu-font" >테마날씨</a></li>
+					<li class="nav-item"><a href="#" class="nav-link menu-font" >관측 기후</a></li>
 				</ul>
 			</nav>
 			
@@ -42,7 +45,13 @@
 							<tr th:each="weather : ${weatherList}">
 								<td th:text="${#temporals.format(weather.date , 'yyyy년 M월 d일')}">1</td>
 								
-								<td>2</td>
+								<td th:switch=${weather.weather}>
+									<img th:case="'맑음'" src="/img/weather_history/sunny.jpg" alt="sunny">
+									<img th:case="'비'" src="/img/weather_history/rainy.jpg" alt="rainy">
+									<img th:case="'구름조금'" src="/img/weather_history/cloudy.jpg" alt="cloudy">
+									<img th:case="'흐림'" src="/img/weather_history/partlyCloudy.jpg" alt="partlyCloudy">
+									<span th:case="'*'" th:text="${weather.weather}"></span>
+								</td>
 								
 								<td th:text="${weather.temperatures  + '℃' }">3</td>
 								
@@ -57,19 +66,15 @@
 			</section>
 		</div>
 		
-		<footer>
-			<div class="d-flex">
-				<div class="col-1">
-					기상청
-				</div>
-				<div>
-					<div>
-						<small class="text-secondary">(07062) 서울시 동작구 여의대방로 16길 61</small>
-					</div>
-					<div>
-						<small class="text-secondary">Copyright © 2024 KMA, All Rights RESERVED</small>
-					</div>
-				</div>
+		<footer class="d-flex align-items-center">
+			<div class="footer-logo ml-4">
+				<img class="foot-logo-image" src="https://www.weather.go.kr/w/resources/image/foot_logo.png" width="120">
+			</div>
+			<div class="copyright ml-4">
+				<small class="text-secondary"> 
+					(07062) 서울시 동작구 여의대방로16길 61 <br>
+					Copyright@20XX KMA. All Rights RESERVED.
+				</small>
 			</div>
 		</footer>
 	</div>

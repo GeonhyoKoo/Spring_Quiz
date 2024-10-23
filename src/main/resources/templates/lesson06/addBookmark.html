@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+</head>
+<body>
+
+	<div class="container">
+		<h2>즐겨 찾기 추가하기</h2>
+		<div class="mt-2">
+			<h5>제목</h5>
+			<input id="name" type="text" class="form-control">
+		</div>
+		<div class="my-2">
+			<h5>주소</h5>
+			<div class="d-flex">
+				<input id="url" type="text" class="form-control col-9">
+				<button type="button" id="checkBtn" class="btn btn-info">중복 확인</button>
+			</div>
+			
+			<small id="duplicateText" class="text-danger d-none">중복된 URL입니다</small>
+			<small id="availableText" class="text-success d-none">저장 가능한 URL입니다</small>
+			
+		</div>
+		
+		<input id="add" type="button" value="추가" class="btn btn-success w-100" >
+	
+	</div>
+
+	
+	<script>
+		
+		$(document).ready(function(){
+			
+			// URL 중복 확인
+			$("#checkBtn").on("click" , function(){
+				//alert("중복확인");
+				
+				let url =  $("#url").val().trim();
+				
+				// validation check
+				// url 입력이 되어있는지
+				if (!url){
+					alert("url입력하세요");
+					return;
+				}
+				
+				// http: 시작하는지 
+				
+				$.ajax({
+					//request
+					type:"POST"
+					, url:"/lesson06/quiz01/is-duplicate-url"
+					, data : {"url" : url }
+					//response
+					, success : function(data){ // string - > parsing - > dictionary
+						// {"code" : 200 , "is_duplicate" : true }
+						if (data.is_duplicate){
+							// 중복일 때
+							$("#duplicateText").removeClass("d-none");
+							$("#availableText").addClass("d-none");
+							
+						} else {
+							// 중복 아니고 사용 가능 할 때
+							$("#duplicateText").addClass("d-none");
+							$("#availableText").removeClass("d-none");
+						}
+						
+					}
+					, error : function(e){
+						alert("중복 확인에 실패했습니다");
+					}
+				});
+				
+				
+			});
+			
+			
+			//추가
+			$("#add").on("click" , function(){
+				
+				let name = $("#name").val().trim();
+				let url = $("#url").val().trim();
+
+				// validation
+				if (name.length < 1){
+					alert("제목을 입력하세요.");
+					return;
+				}
+				
+				if (url == ""){
+					alert("주소를 입력하세요.");
+					return;
+				}
+				
+				// 주소 http, https
+				// http도 아니고, https 도 아니고 -> 잘못된 주소
+				// and조건을 넣어야함. if가 아님.
+				if (!(url.startsWith("http://")) && !(url.startsWith("https://"))){
+					alert("시작 주소가 http, https 프로토콜로 시작하는지 확인해주세요.")
+					return;
+				}
+				
+				
+				// 중복확인 체크
+				// availableText에 d-none 이 있으면 가입 불가
+				if ($("#availableText").hasClass("d-none")){
+					alert("url 중복 확인 해주세요");
+					return;
+				}
+				
+				
+				// parameter check
+				console.log(name);
+				console.log(url);
+				
+				// ajax
+				$.ajax({
+					type : "post"
+					, url : "/lesson06/quiz01/add-bookmark"
+					, data : {"name" : name , "url" : url}
+					, success : function(data){ // AJAX의 응답은 String -> jquery의 함수가 JSON인걸 알면 파싱을 내부적으로 해주고 -> dictionary로 바꿔줌
+						
+						// 예전 방식
+						/* if (data == '성공'){ // redirect로 결과 페이지로 이동해야 할까?
+							//alert("성공");
+							// list view 를 바로 연결해도 insert한 데이터가 추가되었음.
+							// 당연하게 다시 요청했으니 select를 다시 했을거고 다시 model에 담았으니까.
+							location.href ="/lesson06/quiz01/bookmark-list-view";
+						} */
+						
+						
+						// 새로운 방식
+						//alert(data.code);
+						if (data.code == 200){
+							// 화면 이동
+							location.href="/lesson06/quiz01/bookmark-list-view";
+						} else{
+							// 로직상 실패
+							alert(data.error_message); // 에러 원인
+						}
+					}
+					
+					, error : function(){
+						alert("즐겨찾기 추가에 실패하였습니다.");
+					}
+					
+				});
+				
+				
+			});
+			
+		});
+		
+	
+	
+	</script>
+
+</body>
+</html>

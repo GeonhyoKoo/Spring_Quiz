@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>통나무 펜션</title>
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+    
+    <!--  내가 만든 스타일 시트 -->
+    <link rel="stylesheet" th:href="@{/css/booking/style.css}" type="text/css">
+    
+</head>
+<body>
+	
+	<div id="wrap" class="container">
+		<!-- 홈페이지 탑 -->
+		<header class="d-flex justify-content-center align-items-center">
+			<h1>통나무 펜션</h1>
+		</header>
+		
+		<!-- 메뉴창 -->
+		<nav>
+			<ul class="nav font-weight-bold align-items-center nav-fill">
+				<li class="nav-item"><a href="#" class="nav-link text-white">펜션소개</a></li>
+				<li class="nav-item"><a href="#" class="nav-link text-white">객실보기</a></li>
+				<li class="nav-item"><a href="#" class="nav-link text-white">예약하기</a></li>
+				<li class="nav-item"><a href="/booking/booking-list-view" class="nav-link text-white">예약목록</a></li>
+			</ul>
+		</nav>	
+		
+		
+		<!--  예약 목록 리스트 -->
+		<section id="bookingList">
+			<div class="d-flex justify-content-center">
+				<h3>예약 목록 보기</h3>
+			</div>
+			
+			<table class="table text-center">
+				<thead>
+					<tr>
+						<th>이름</th>
+						<th>예약날짜</th>
+						<th>숙박일수</th>
+						<th>숙박인원</th>
+						<th>전화번호</th>
+						<th>예약상태</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="booking : ${bookingList}">
+						<td th:text="${booking.name}"></td>
+						<td th:text="${#temporals.format(booking.date , 'yyyy년 M월 d일')}"></td>
+						<td th:text="${booking.day}"></td>
+						<td th:text="${booking.headcount}"></td>
+						<td th:text="${booking.phoneNumber}"></td>
+						<td th:switch="${booking.state}">
+							<span th:case="'대기중'" th:text="${booking.state}" class="text-info"></span>
+							<span th:case="'확정'" th:text="${booking.state}" class="text-success"></span>
+							<span th:case="'취소'" th:text="${booking.state}" class="text-danger"></span>
+						</td>
+						<td><button type ="button" class="del-btn btn btn-danger" th:data-booking-id="${booking.id}">삭제</button></td>
+					</tr>
+				</tbody>
+			</table>
+		
+		
+		</section>
+		
+		
+				
+		<!-- footer 창 -->
+		<footer>
+			<div>
+				<small class="text-secondary">제주특별자치도 제주시 애월읍</small>
+			</div>
+			<div>
+				<small class="text-secondary">사업자 등록번호 : 111-22-252222/ 농어촌민박사업자지정 / 대표 : 김동욱</small>
+			</div>
+			<div>
+				<small class="text-secondary">Copyright 2024 tongnamu. All right reserved </small>
+			</div>	
+		</footer>
+	</div>
+	
+	
+	<script>
+		$(document).ready(function(){
+			
+			// delete
+			$(".del-btn").on("click" , function(){
+				//alert("test");
+				let bookingId = $(this).data("booking-id");
+				//alert(bookingId);
+				
+				// ajax
+				$.ajax({
+					//request
+					type : "delete"
+					, url : "/delete-booking"
+					, data : {"id" : bookingId}
+					//response - call back
+					// {"code" : 200 , "result" : "success"}
+					, success : function(data){
+						if (data.result == "success"){
+							// 새로 고침 처리
+							alert("삭제되었습니다");
+							location.reload(true);
+						} else if (data.code == 400){
+							// {"code" : 400 , "error_message" : "에러 이유"}
+							alert(data.error_message);
+						}
+					}
+					, error : function(e){
+						alert("삭제에 실패했습니다.");
+					}
+				});
+				
+				
+				
+			});
+			
+		});	
+	
+	</script>
+	
+	
+	
+</body>
+</html>

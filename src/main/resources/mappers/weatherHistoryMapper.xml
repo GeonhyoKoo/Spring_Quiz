@@ -18,4 +18,31 @@
  			`weatherhistory`
  	</select>
  
+ 
+ 	<insert id="insertWeatherHistory" parameterType="com.quiz.weather_history.domain.WeatherHistory">
+ 		INSERT INTO `weatherhistory`
+ 		(
+ 			`date`
+ 			,`weather`
+ 			,`temperatures`
+ 			,`precipitation`
+ 			,`microDust`
+ 			,`windSpeed`
+ 			,`createdAt`
+ 			,`updatedAt`
+ 		)
+ 		VALUES
+ 		(
+ 			#{date}
+ 			,#{weather}
+ 			,#{temperatures}
+ 			,#{precipitation}
+ 			,#{microDust}
+ 			,#{windSpeed}
+ 			,NOW()
+ 			,NOW()
+ 		)
+ 	
+ 	</insert>
+ 
  </mapper>

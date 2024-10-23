@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>즐겨 찾기 추가하기</title>
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+</head>
+<body>
+
+	<div class="container">
+		<h2>즐겨 찾기 추가하기</h2>
+		<div class="mt-2">
+			<h5>제목</h5>
+			<input id="name" type="text" class="form-control">
+		</div>
+		<div class="my-2">
+			<h5>주소</h5>
+			<div class="d-flex">
+				<input id="url" type="text" class="form-control">
+				<input id="urlCheckBtn" type="button" class="btn btn-info" value="중복 확인">
+			</div>
+			<small id="urlStatusArea"></small>
+		</div>
+		<input id="addBtn" type="button" value="추가" class="btn btn-success w-100" >
+	
+	</div>
+
+	<script>
+	
+		$(document).ready(function(){
+			
+			// 주소 중복 체크
+			$("#urlCheckBtn").on("click" , function(){
+				
+				// 세팅 초기화
+				$("#urlStatusArea").empty();
+				
+				//alert("1");
+				
+				let url = $("#url").val().trim();
+				//alert(url);
+				
+				// 1. 비어 있는 경우
+				if (!url){
+					$("#urlStatusArea").append('<span class="text-danger">url을 입력하세요.</span>');
+					return;
+				}
+				
+				// 2. http , https 가 아닌 경우
+				if (!(url.startsWith("http://")) && !(url.startsWith("https://"))){
+					$("#urlStatusArea").append('<span class="text-danger">잘못된 url입니다.</span>');
+					return;
+				}
+				
+				// 3. url이 중복된 경우
+				$.ajax({
+					// request
+					type : "GET"
+					, url : "/lesson06/quiz02/is-duplicated-url"
+					, data : {"url" : url}
+					// response
+					, success:function(data){
+						// {"code" : 200 , "is_duplicated_url" : true}
+						if (data.is_duplicated_url){
+							$("#urlStatusArea").append('<span class="text-danger">중복된 url입니다.</span>');
+						}
+					}
+					, error:function(e){
+						alert("중복 확인을 실패했습니다.");
+					}
+				});
+			});
+			
+			
+			
+			// 추가 진행
+			$("#addBtn").on("click" , function(){
+				
+				// span 노출이 되어있는지 check
+				if ($("#urlStatusArea").children().length > 0){
+					alert("추가 불가능 합니다.");
+					return;
+				} 
+				
+				let name = $("#name").val().trim();
+				let url = $("url").val().trim();
+				
+				$.ajax({
+					//request
+					type : "POST"
+					, url : "/lesson06/quiz02/add-bookmark2"
+					, data : {"name" : name , "url" : url}
+					// response
+					// {"code" : 200 , "error_message" : error}
+					, success : function(data){
+						if (data.code == 200){
+							location.href = "/lesson06/quiz02/bookmarkList2";
+						}
+					}
+					, error : function(e){
+						alert("추가 진행 실패");
+					}
+				});
+				
+				
+			});
+			
+			
+			
+			
+			
+		});
+		
+	</script>
+
+	</body>
+</html>
