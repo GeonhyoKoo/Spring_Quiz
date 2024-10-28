@@ -121,7 +121,7 @@ public class BookingController {
 			result.put("result", booking);
 		} else {
 			result.put("code", 400);
-			result.put("error_mesage", "예약 내역이 없습니다");
+			result.put("error_message", "예약 내역이 없습니다");
 		}
 		
 		return result;
